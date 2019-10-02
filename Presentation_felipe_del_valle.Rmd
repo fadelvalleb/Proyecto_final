@@ -1,35 +1,41 @@
 ---
-title: "Proyecto Final BIO4022"
+title: "Proyecto Final BIO4022  Rendimiento escolar y sus posibles determinantes: un caso de estudio"
 author: "Felipe Del Valle"
-date: "28 de septiembre de 2019"
-output: ioslides_presentation
+date: "`r format(Sys.time(), '%d/%m / %Y')`"
+output:
+  ioslides_presentation:
+    widescreen: true
+    incremental: true
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(kableExtra)
+options("kableExtra.html.bsTable" = T) # esto permite hacer tablas kablextra
 ```
 
-## R Markdown
 
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
-
-## Slide with Bullets
+## Introducción y conceptos clave
 
 - Bullet 1
 - Bullet 2
 - Bullet 3
 
-## Slide with R Output
+## Hipótesis y pregunta de investigación
 
 ```{r cars, echo = TRUE}
 summary(cars)
 ```
 
-## Slide with Plot
+## Metodología y resultados
 
 ```{r pressure}
 plot(pressure)
 ```
+
+## Conclusiones y discusión
+
+
+## Referencias
 
