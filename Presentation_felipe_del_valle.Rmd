@@ -20,7 +20,7 @@ options("kableExtra.html.bsTable" = T) # esto permite hacer tablas kablextra
 
 
 
-##Rendimiento académico y sus determinantes
+## Rendimiento académico y sus determinantes
 -Se ha planteado que existen diferencias entre IQ de hombres y mujeres. Estas diferencias podrían tener efectos en rendimiento académico (Voyer, 2014).
 
 -Estudios anteriores han considerado otros determinantes como:
@@ -89,7 +89,25 @@ ggplot(Students, aes(Matematicas)) + geom_histogram(binwidth=10, color="black", 
 grid.arrange(p1, p2, p3, ncol = 3)
 ```
 
-## Diferencias entre géneros por pureba
+## Diferencias entre géneros por prueba y nivel de los padres
+```{r}
+ggplot(Students, aes(Genero, Matematicas, color = Nivel_Padres)) + geom_boxplot()+
+ xlab("Género") + ylab("Puntaje matemáticas") 
+```
+
+## Resultados para escritura y lectura
+```{r}
+
+ggplot(Students, aes(Genero, Lectura, color = Nivel_Padres)) + geom_boxplot()+
+  xlab("Género") + ylab("Puntaje lectura") -> g2
+
+ggplot(Students, aes(Genero, Escritura, color = Nivel_Padres)) + geom_boxplot()+
+  xlab("Género") + ylab("Puntaje escritura") -> g3
+
+grid.arrange(g2,g3)
+```
+
+## Visualización con modelo
 
 
 ## Referencias

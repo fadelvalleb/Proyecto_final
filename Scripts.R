@@ -30,3 +30,15 @@ ggplot(Students, aes(Matematicas)) + geom_histogram(binwidth=10, color="black", 
 
 ## uso de grid arrange
 grid.arrange(p1, p2, p3, ncol = 3)
+
+
+### plots para comparar medias directamente
+ggplot(Students, aes(Genero, Matematicas, color = Nivel_Padres)) + geom_boxplot()+
+ xlab("Género") + ylab("Puntaje matemáticas") 
+
+ggplot(Students, aes(Genero, Lectura, color = Nivel_Padres)) + geom_boxplot()+
+  xlab("Género") + ylab("Puntaje lectura")
+
+ggplot(Students, aes(Genero, Escritura, color = Nivel_Padres)) + geom_boxplot()+
+  xlab("Género") + ylab("Puntaje escritura")
+
