@@ -1,5 +1,5 @@
 ---
-title: 'Proyecto Final BIO4022  Rendimiento acadÃ©mico y sus posibles determinantes:
+title: 'Proyecto Final BIO4022  Rendimiento académico y sus posibles determinantes:
   un caso de estudio'
 author: "Felipe Del Valle"
 date: "`r format(Sys.time(), '%d/%m / %Y')`"
@@ -184,7 +184,7 @@ knitr::kable(Sum3_1, caption = "Modelo 2 Matemáticas", digits = 2)%>% kable_sty
 
 ```
 
-El modelo de lectura tiene un r cuadrado de `r round(Sum1$r.squared, 2)`, el de escritura uno de `r round(Sum2$r.squared, 2)` y el de matemáticas uno de `r round(Sum3$r.squared, 2)`
+El modelo de lectura tiene un r cuadrado de `r round(Sum1_1$r.squared, 2)`, el de escritura uno de `r round(Sum2_1$r.squared, 2)` y el de matemáticas uno de `r round(Sum3_1$r.squared, 2)`
 
 ##Conclusiones y discusión
 - El nivel socioeconómico de los padres y el género no logran explicar el rendimiento académico de los alumnos.
