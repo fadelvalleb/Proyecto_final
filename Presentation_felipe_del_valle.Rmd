@@ -1,13 +1,32 @@
 ---
-title: "Proyecto Final BIO4022  Rendimiento académico y sus posibles determinantes: un caso de estudio"
+title: 'Proyecto Final BIO4022  Rendimiento acadÃ©mico y sus posibles determinantes:
+  un caso de estudio'
 author: "Felipe Del Valle"
 date: "`r format(Sys.time(), '%d/%m / %Y')`"
 output:
   ioslides_presentation:
-    widescreen: true
-    incremental: true
+    fig_height: 3
+    fig_width: 10
+    incremental: yes
+    smaller: no
+    widescreen: yes
+  
 ---
+<style>
+pre {
+  font-size: 20px;
+}
+body > slides {
+    padding: 0;
+}
 
+slides > slide{
+    width: 90vw;
+    height: 90vh;
+    border-radius: 0;
+}
+
+</style>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
@@ -19,37 +38,32 @@ options("kableExtra.html.bsTable" = T) # esto permite hacer tablas kablextra
 ```
 
 
-
 ## Rendimiento académico y sus determinantes
--Se ha planteado que existen diferencias entre IQ de hombres y mujeres. Estas diferencias podrían tener efectos en rendimiento académico (Voyer, 2014).
+- Se ha planteado que existen variaciones académicas de rendimiento entre de hombres y mujeres. Estas diferencias podrían tener su origen en variados determinantes (Voyer, 2014).
 
--Estudios anteriores han considerado otros determinantes como:
+- Estudios anteriores han considerado otros determinantes como:
   
--Nivel socioeconómico de los padres
+- Nivel socioeconómico de los padres
   
--Peparación antes de las pruebas
+- Peparación antes de las pruebas
 
--Se utilizará la siguiente base de datos de kaggle <https://www.kaggle.com/spscientist/students-performance-in-exams> 
+- Se utilizará la siguiente base de datos de kaggle <https://www.kaggle.com/spscientist/students-performance-in-exams> 
 
 
 ## Hipótesis y pregunta de investigación
-
 En este ejercicio académico se buscará encontrar un modelo que pueda responder a la siguiente hipótesis.
 
-Hipótesis: "El resultado en pruebas académicas "
+- Hipótesis: "El resultado en pruebas académicas puede ser explicado por determinantes como el género o el status socioeconómico de los padres "
 
-Lo anterior se estudiará relacionando los factores de género, nivel socioeconómico de los padres, tipo de preparación antes de las prueba y resultados de las pruebas.
+- Lo anterior se estudiará relacionando los factores de género, nivel socioeconómico de los padres, tipo de preparación antes de las prueba y resultados de las pruebas.
 
 ## Exploración y curación de los datos
-
 Al explorar la base de datos, esta se nos presenta con los siguientes encabezados
-
 ```{r, echo=FALSE}
 library(readr)
 StudentsPerformance <- read_csv("StudentsPerformance.csv")
 colnames(StudentsPerformance)
 ```
-
 -Para el interés de esta investigación, se ocuparán los siguientes:
 
 Género, scores de reading, writing y matemáticas; además de la preparación y el nivel de educación de los padres.
@@ -85,7 +99,7 @@ ggplot(Students, aes(Escritura)) + geom_histogram(binwidth=10, color="black", ae
 ggplot(Students, aes(Matematicas)) + geom_histogram(binwidth=10, color="black", aes(fill=Genero))+
   geom_vline(aes(xintercept=mean(Escritura)), color="black", linetype="dashed", size=0.5) ->p3
 
-## uso de grid arrange
+## uso de grid dejar los tres gráficos en la misma página. Se incluye la media.
 grid.arrange(p1, p2, p3, ncol = 3)
 ```
 
@@ -97,19 +111,85 @@ ggplot(Students, aes(Genero, Matematicas, color = Nivel_Padres)) + geom_boxplot(
 
 ## Resultados para escritura y lectura
 ```{r}
-
 ggplot(Students, aes(Genero, Lectura, color = Nivel_Padres)) + geom_boxplot()+
-  xlab("Género") + ylab("Puntaje lectura") -> g2
-
-ggplot(Students, aes(Genero, Escritura, color = Nivel_Padres)) + geom_boxplot()+
-  xlab("Género") + ylab("Puntaje escritura") -> g3
-
-grid.arrange(g2,g3)
+  xlab("Género") + ylab("Puntaje lectura") 
 ```
 
-## Visualización con modelo
+```{r}
+ggplot(Students, aes(Genero, Escritura, color = Nivel_Padres)) + geom_boxplot()+
+  xlab("Género") + ylab("Puntaje escritura") 
+```
 
+## Elección de un modelo {.smaller}
+Se interpretarán los datos de acuerdo a el modelo siguiente:
+$$Rendimiento = NivelPadres+Género $$
+```{r}
+Fit1 <- lm(Lectura ~  Genero+Nivel_Padres, data = Students)
+
+Sum1 <-glance(Fit1) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+kable(Sum1, caption = "Modelo 1 Lectura", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover", full_width = F))
+
+```
+
+```{r}
+Fit2 <- lm(Escritura ~ Genero+Nivel_Padres, data = Students)
+
+Sum2 <-glance(Fit2) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+knitr::kable(Sum2, caption = "Modelo 1 Escritura", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover", full_width = F))
+
+
+```
+
+```{r}
+Fit3 <- lm(Matematicas ~ Genero + Nivel_Padres, data = Students)
+
+Sum3 <-glance(Fit3) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+knitr::kable(Sum3, caption = "Modelo 1 Matemáticas", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover", full_width = F))
+
+```
+
+El modelo de lectura tiene un r cuadrado de `r round(Sum1$r.squared, 2)`, el de escritura uno de `r round(Sum2$r.squared, 2)` y el de matemáticas uno de `r round(Sum3$r.squared, 2)`
+
+## Elección de un segundo modelo {.smaller}
+Se interpretarán los datos de acuerdo a el modelo siguiente:
+$$Rendimiento = Preparación+Género $$
+```{r}
+Fit1_1 <- lm(Lectura ~  Preparacion+Nivel_Padres, data = Students)
+
+Sum1_1 <-glance(Fit1_1) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+kable(Sum1_1, caption = "Modelo 2 Lectura", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover", full_width = F))
+
+```
+
+```{r}
+Fit2_1 <- lm(Escritura ~ Preparacion+Nivel_Padres, data = Students)
+
+Sum2_1 <-glance(Fit2_1) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+knitr::kable(Sum2, caption = "Modelo 2 Escritura", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover", full_width = F))
+
+
+```
+
+```{r}
+Fit3_1 <- lm(Matematicas ~ Preparacion + Nivel_Padres, data = Students)
+
+Sum3_1 <-glance(Fit3_1) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+knitr::kable(Sum3_1, caption = "Modelo 2 Matemáticas", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover", full_width = F))
+
+```
+
+El modelo de lectura tiene un r cuadrado de `r round(Sum1$r.squared, 2)`, el de escritura uno de `r round(Sum2$r.squared, 2)` y el de matemáticas uno de `r round(Sum3$r.squared, 2)`
+
+##Conclusiones y discusión
+- El nivel socioeconómico de los padres y el género no logran explicar el rendimiento académico de los alumnos.
+
+- El género y la preparación en su conjunto no logran explicar el rendimiento académico de estos alumnos.
 
 ## Referencias
-
 - D. Voyer and D. Voyer Susan D., “Gender differences in scholastic achievement: A meta-analysis,” Psychol. Bull., 2014.

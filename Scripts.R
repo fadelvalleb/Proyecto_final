@@ -5,6 +5,7 @@ library(kableExtra)
 library(readr)
 library(gridExtra)
 library(grid)
+library(broom)
 ###Se lee la base de datos y se importa como dataframe
 StudentsPerformance <- read_csv("StudentsPerformance.csv")
 ##Con los siguientes comandos se seleccionarán las columnas de trabajo.
@@ -42,3 +43,21 @@ ggplot(Students, aes(Genero, Lectura, color = Nivel_Padres)) + geom_boxplot()+
 ggplot(Students, aes(Genero, Escritura, color = Nivel_Padres)) + geom_boxplot()+
   xlab("Género") + ylab("Puntaje escritura")
 
+### prueba del modelo para relación nivel de padres y rendimiento hijos
+Fit1 <- lm(Lectura ~ Genero + Nivel_Padres, data = Students)
+
+Sum1 <-glance(Fit1) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+knitr::kable(Sum1, caption = "Modelo 1 Lectura", digits = 2)
+
+Fit2 <- lm(Escritura ~ Genero + Nivel_Padres, data = Students)
+
+Sum2 <-glance(Fit2) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+knitr::kable(Sum2, caption = "Modelo 1 Escritura", digits = 2)
+
+Fit3 <- lm(Lectura ~ Genero + Nivel_Padres, data = Students)
+
+Sum3 <-glance(Fit1) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+knitr::kable(Sum3, caption = "Modelo 1 Matemáticas", digits = 2)
