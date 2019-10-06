@@ -76,7 +76,7 @@ ggarrange(p1, p2, p3 + rremove("x.text"),
                 )
 ```
 
-Según lo obtenido, se puede apreciar que la distribución en frecuencia de los puntajes se asemeja a una curva normal. Esto sugiere que no existirían mayores diferencias entre los géneros para cualquier evaluación en este caso.
+Según lo obtenido, se puede apreciar que la distribución en frecuencia de los puntajes se asemeja a una curva normal. A esto se suma que las medias para cada genero están prácticamente superpuestas. Esto sugiere que no existirían mayores diferencias entre los géneros para cualquier evaluación en este caso.
 
 ### Diferencias entre géneros por prueba y nivel de los padres
 
