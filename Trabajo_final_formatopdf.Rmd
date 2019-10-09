@@ -53,14 +53,14 @@ Students<-StudentsPerformance %>%
           Matematicas="math score")
           
 ## plot para matematicas y lenguaje por genero
-ggplot(Students, aes(Lectura)) + geom_histogram(binwidth=10, color="black", aes(fill=Genero))+
+ggplot(Students, aes(Lectura)) + geom_density(binwidth=10, color="black", aes(fill=Genero), alpha=0.5 )+
   geom_vline(aes(xintercept=mean(Lectura)), color="black", linetype="dashed", size=0.5) -> p1
  
                               
-ggplot(Students, aes(Escritura)) + geom_histogram(binwidth=10, color="black", aes(fill=Genero))+
+ggplot(Students, aes(Escritura)) + geom_density(binwidth=10, color="black", aes(fill=Genero), alpha=0.5)+
   geom_vline(aes(xintercept=mean(Escritura)), color="black", linetype="dashed", size=0.5) -> p2
 
-ggplot(Students, aes(Matematicas)) + geom_histogram(binwidth=10, color="black", aes(fill=Genero))+
+ggplot(Students, aes(Matematicas)) + geom_density(binwidth=10, color="black", aes(fill=Genero), alpha=0.5)+
   geom_vline(aes(xintercept=mean(Escritura)), color="black", linetype="dashed", size=0.5) ->p3
 
 ## uso de ggpubr para dejar los tres gráficos en la misma página. Se incluye la media.
