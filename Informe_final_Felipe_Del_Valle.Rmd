@@ -1,0 +1,177 @@
+---
+title: "Determinantes del rendimiento académico: un caso de estudio"
+author: "Felipe Del Valle"
+date: "`r format(Sys.time(), '%d/%m/%Y')`"
+output: pdf_document
+bibliography: biblio.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+library(tidyverse)
+library(broom)
+library(ggplot2)
+library(readr)
+library(gridExtra)
+library(grid)
+library(ggpubr)
+options("kableExtra.html.bsTable" = T)
+```
+
+## I) Introducción
+Las diferencias de rendimiento académico entre géneros [@Voyer2014] ha sido un tema discutido extensivamente en las ciencias sociales. Estudios recientes [@MarcJackman2019] han mostrado, en condiciones particulares, que las mujeres tienden ligeramente a un mejor desempeño académico. Sin embargo, el resultado en pruebas parametrizadas no solo puede ser explorado ni explicado únicamente desde esta diferencia biológica. Entre los factores más relevantes al momento de predecir el rendimiento académico de una población están los socioeconómicos, como el nivel promedio de ingresos [@Thomson2018] o la formación educacional de los padres. 
+
+En este ejercicio se buscará aplicar las herramientas aprendidas en el curso BIO4022 para explorar una base de datos y obtener de ella información relevante para responder a una hipótesis. En este caso, se buscará determinar si existe o no un modelo lineal que permita explicar en este conjunto de observaciones, el rendimiento académico en pruebas de escritura, lectura y matemáticas. Lo anterior basado en posibles determinantes como el género, nivel de preparación de antes de las pruebas y el nivel académico de los padres.
+
+## II) Metodología y resultados
+
+### Origen de los datos
+Para este ejercicio se trabajó con una base de datos disponible en <https://www.kaggle.com/spscientist/students-performance-in-exams>. Esta es de uso público y contiene datos que son relevantes para la pregunta de investigación.
+
+### Exploración de los datos
+En primer lugar, ocupando las librerías de tidyverse [@Wickham2016] se exploraron los datos para verificar cuáles eran los descriptores que se presentaban en las columnas obtenidas desde la base. A continuación se muestra el Chunk para estas instrucciones.
+```{r, echo=TRUE, message=FALSE}
+StudentsPerformance <- read_csv("StudentsPerformance.csv")
+colnames(StudentsPerformance)
+```
+Para el interés de esta investigación, se ocuparán los siguientes: Género, scores de reading, writing y matemáticas; además de la preparación y el nivel de educación de los padres.
+
+###Visualización de los descriptores de interés
+De manera posterior, se ocupó el paquete ggplot [@Vinet2010] para ordenar los datos visualmente y entender el tipo de distribución que muestran para las pruebas de lectura, escritura y matemáticas. Esto se resume en los siguientes gráficos.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+###Se lee la base de datos y se importa como dataframe
+StudentsPerformance <- read_csv("StudentsPerformance.csv")
+##Con los siguientes comandos se seleccionarán las columnas de trabajo.
+
+Students<-StudentsPerformance %>% 
+  select("gender","reading score","writing score","math score","test preparation course",
+         "parental level of education") %>% 
+   rename(Genero=gender,Lectura="reading score", Escritura="writing score", 
+          Preparacion="test preparation course", Nivel_Padres="parental level of education", 
+          Matematicas="math score")
+          
+## plot para matematicas y lenguaje por genero
+ggplot(Students, aes(Lectura)) + geom_density(binwidth=10, color="black", aes(fill=Genero), alpha=0.5 )+
+  geom_vline(aes(xintercept=mean(Lectura)), color="black", linetype="dashed", size=0.5) -> p1
+ 
+                              
+ggplot(Students, aes(Escritura)) + geom_density(binwidth=10, color="black", aes(fill=Genero), alpha=0.5)+
+  geom_vline(aes(xintercept=mean(Escritura)), color="black", linetype="dashed", size=0.5) -> p2
+
+ggplot(Students, aes(Matematicas)) + geom_density(binwidth=10, color="black", aes(fill=Genero), alpha=0.5)+
+  geom_vline(aes(xintercept=mean(Escritura)), color="black", linetype="dashed", size=0.5) ->p3
+
+## uso de ggpubr para dejar los tres gráficos en la misma página. Se incluye la media.
+
+ggarrange(p1, p2, p3 + rremove("x.text"), 
+          labels = c("A", "B", "C"),
+          ncol = 2, nrow = 2) %>% 
+  annotate_figure(
+                top = text_grob("Puntajes por género", color = "black", size = 14),
+                bottom = text_grob("Distribución de los puntajes en las respectivas pruebas (Verde=Hombres, Sandía=Mujeres)",
+                                   hjust = 1, x = 1, face = "italic", size = 10),
+                fig.lab = "Fig.1", fig.lab.face = "bold"
+                )
+```
+
+Según lo obtenido, se puede apreciar que la distribución en frecuencia de los puntajes se asemeja a una curva normal. A esto se suma que las medias para cada genero están prácticamente superpuestas. Esto sugiere que no existirían mayores diferencias entre los géneros para cualquier evaluación en este caso.
+
+### Diferencias entre géneros por prueba y nivel de los padres
+
+Luego, se evaluaron visualmente los puntajes por género para comprender cuál es su posible relación con el nivel educacional de los padres. En primer lugar se ilustran los datos obtenidos para los puntajes en matemáticas.
+```{r, echo=FALSE, message=FALSE}
+ggplot(Students, aes(Genero, Matematicas, color = Nivel_Padres)) + geom_boxplot()+
+ xlab("Género") + ylab("Puntaje matemáticas") + ggtitle("Fig.2: Puntaje en matemáticas según género y nivel de los padres")+ theme(plot.title = element_text(color = "black", size = 10))
+```
+
+Se aprecia que al igual que en lo que respecta a las diferencias por género, el nivel educacional de los padres no estaría afectando a este parámetro.
+
+### Resultados para escritura y lectura
+Siguiendo la misma lógica anterior se analizaron los resultados para las pruebas de lectura y escritura, obteniéndose los siguientes gráficos.
+
+```{r, echo=FALSE, message=FALSE}
+ggplot(Students, aes(Genero, Lectura, color = Nivel_Padres)) + geom_boxplot()+
+  xlab("Género") + ylab("Puntaje lectura") + ggtitle("Fig.3: Puntaje en lectura según género y nivel de los padres")+ theme(plot.title = element_text(color = "black", size = 10))
+```
+
+```{r, echo=FALSE, message=FALSE}
+ggplot(Students, aes(Genero, Escritura, color = Nivel_Padres)) + geom_boxplot()+
+  xlab("Género") + ylab("Puntaje escritura") + ggtitle("Fig.4: Puntaje en escritura según género y nivel de los padres")+ theme(plot.title = element_text(color = "black", size = 10))
+```
+
+Sorprendentemente, hasta ahora, los determinantes de género y de preparación educacional de los padres parecen no tener un efecto notorio sobre la distribución de los puntajes para todas las pruebas realizadas.
+
+### Elección de un modelo
+Para comprender si estos resultados se ajustan a algún modelo que pueda predecir el rendimiento académico según sus determinantes, se probarán los siguientes. Se verificará si el rendimiento está explicado por el nivel de los padres y el género; considerando un modelo lineal. Se resume en tablas el valor de r cuadrado y AIC obtenido para este caso.
+
+$$Rendimiento = NivelPadres+Género $$
+
+```{r, echo=FALSE, message=FALSE}
+Fit1 <- lm(Lectura ~  Genero+Nivel_Padres, data = Students)
+
+Sum1 <-glance(Fit1) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+kable(Sum1, caption = "Modelo 1 Lectura", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover", full_width = F), latex_options = "HOLD_position")
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+Fit2 <- lm(Escritura ~ Genero+Nivel_Padres, data = Students)
+
+Sum2 <-glance(Fit2) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+kable(Sum2, caption = "Modelo 1 Escritura", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover", full_width = F),latex_options = "HOLD_position")
+
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+Fit3 <- lm(Matematicas ~ Genero + Nivel_Padres, data = Students)
+
+Sum3 <-glance(Fit3) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+kable(Sum3, caption = "Modelo 1 Matemáticas", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover", full_width = F),latex_options = "HOLD_position")
+
+```
+
+El modelo de lectura tiene un r cuadrado de `r round(Sum1$r.squared, 2)`, el de escritura uno de `r round(Sum2$r.squared, 2)` y el de matemáticas uno de `r round(Sum3$r.squared, 2)`
+
+### Elección de un segundo modelo
+Luego, se probó un segundo modelo lineal que busca explicar el rendimiento mediante la preparación antes de las pruebas y el género de los estudiantes.
+$$Rendimiento = Preparación+Género $$
+```{r, echo=FALSE, message=FALSE}
+Fit1_1 <- lm(Lectura ~  Preparacion+Nivel_Padres, data = Students)
+
+Sum1_1 <-glance(Fit1_1) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+kable(Sum1_1, caption = "Modelo 2 Lectura", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover", full_width = F),latex_options = "hold_position")
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+Fit2_1 <- lm(Escritura ~ Preparacion+Nivel_Padres, data = Students)
+
+Sum2_1 <-glance(Fit2_1) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+kable(Sum2, caption = "Modelo 2 Escritura", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover", full_width = F),latex_options = "hold_position")
+
+
+```
+
+```{r, echo=FALSE, message=FALSE}
+Fit3_1 <- lm(Matematicas ~ Preparacion + Nivel_Padres, data = Students)
+
+Sum3_1 <-glance(Fit3_1) %>% dplyr::select(r.squared, p.value, df, AIC)
+
+kable(Sum3_1, caption = "Modelo 2 Matemáticas", digits = 2)%>% kable_styling(bootstrap_options = c("striped", "hover","bordered",full_width = F), latex_options = "hold_position")
+
+```
+
+El modelo de lectura tiene un r cuadrado de `r round(Sum1_1$r.squared, 2)`, el de escritura uno de `r round(Sum2_1$r.squared, 2)` y el de matemáticas uno de `r round(Sum3_1$r.squared, 2)`
+
+##III) Conclusiones y discusión
+Considerando lo analizado en este trabajo, se puede concluir que un modelo lineal para explorar las diferencias en puntajes de estas pruebas parametrizadas no es suficiente y debería considerar un análisis más robusto y probablemente con otros indicadores. Esto queda demostrado por los altos indicadores de AIC y bajos de r cuadrado en los casos probados. De la misma manera, es posible también discutir que la transparencia de esta base de datos no permite saber de dónde se obtuvieron y si son o no ficticios. Finalmente, debería tratrse estos datos con otro tipo de modelo que se adecue a estudios anteriores para encontrar un buen predictor.
+
+##Referencias
